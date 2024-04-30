@@ -28,26 +28,25 @@ cache_t *make_cache(int capacity, int block_size, int assoc, enum protocol_t pro
   // - for each element in the array, malloc another array with n_col
   // FIX THIS CODE!
 
-  cache->lines = malloc(cache->n_rows * sizeof(cache_line_t*));
-  for(int i = 0; i < cache->n_rows; i++){
-    cache->lines[i] = malloc(cache->n_col * sizeof(cache_line_t));
+
+
+  cache->lines = malloc(cache->n_set * sizeof(cache_line_t*));
+  for(int i = 0; i < cache->n_set; i++){
+    cache->lines[i] = malloc(cache->assoc * sizeof(cache_line_t));
   }
   
-  cache->lru_way = malloc(cache->n_rows * sizeof(int*));
-  for(int i = 0; i < cache->n_rows; i++){
-    cache->lru_way[i] = malloc(cache->n_col * sizeof(int*));
-  }
+  cache->lru_way = malloc(cache->n_set * sizeof(int));
 
   // initializes cache tags to 0, dirty bits to false,
   // state to INVALID, and LRU bits to 0
   // FIX THIS CODE!
-  for (int i = 0; i < 1; i++) {
-    for (int j = 0; j < 1; j++) {
+  for (int i = 0; i < cache->n_set; i++) {
+    for(int j = 0; j< assoc; j++){
       cache->lines[i][j].tag = 0;
-      cache->lines[i][j].dirty = false;
+      cache->lines[i][j].dirty_f = false;
       cache->lines[i][j].state = INVALID;
-      cache->lru_way[i][j] = 0;
     }
+    cache->lru_way[i] = 0;
   }
 
   cache->protocol = protocol;
@@ -81,7 +80,7 @@ unsigned long get_cache_index(cache_t *cache, unsigned long addr) {
   // FIX THIS CODE!
   int mask;
   mask = (1 << cache->n_index_bit) - 1;
-  mask <<= (cache->cache->n_offset_bit);
+  mask <<= (cache->n_offset_bit);
   return (addr & mask) >> cache->n_offset_bit;
 }
 
@@ -110,7 +109,25 @@ unsigned long get_cache_block_addr(cache_t *cache, unsigned long addr) {
  */
 bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   // FIX THIS CODE!
+  //task 4
+  unsigned long block_addr = get_cache_block_addr(cache, addr);
+  unsigned long tag = get_cache_tag(cache, addr);
+  unsigned long index = get_cache_index(cache, addr);
 
 
-  return true;  // cache hit should return true
+  cache_line_t *line = &(cache->lines[index][0]);
+
+  if (line->tag == tag && line->state != INVALID) {
+    // Cache hit
+    update_stats(cache->stats, true, false, false, action);
+    return true;
+  } else {
+    // Cache miss
+    bool upgrade_miss = (action == STORE);
+    update_stats(cache->stats, false, true, upgrade_miss, action);
+    line->tag = tag;
+    line->state = VALID; // Assuming all misses result in a shared state
+    return false;
+  }
+
 }
