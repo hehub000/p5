@@ -21,7 +21,7 @@ cache_t *make_cache(int capacity, int block_size, int assoc, enum protocol_t pro
   cache->n_set = cache->capacity / (cache->block_size * cache->assoc); // good
   cache->n_offset_bit = log2(cache->block_size); // good
   cache->n_index_bit = log2(cache->n_set); // good
-  cache->n_tag_bit = log2(cache->assoc); // good
+  cache->n_tag_bit = ADDRESS_SIZE - cache->n_index_bit - cache->n_offset_bit; // good
 
   // next create the cache lines and the array of LRU bits
   // - malloc an array with n_rows
@@ -41,7 +41,7 @@ cache_t *make_cache(int capacity, int block_size, int assoc, enum protocol_t pro
   // state to INVALID, and LRU bits to 0
   // FIX THIS CODE!
   for (int i = 0; i < cache->n_set; i++) {
-    for(int j = 0; j< assoc; j++){
+    for(int j = 0; j< cache->assoc; j++){
       cache->lines[i][j].tag = 0;
       cache->lines[i][j].dirty_f = false;
       cache->lines[i][j].state = INVALID;
@@ -64,10 +64,10 @@ cache_t *make_cache(int capacity, int block_size, int assoc, enum protocol_t pro
 unsigned long get_cache_tag(cache_t *cache, unsigned long addr) {
 
   // FIX THIS CODE!
-  int mask;
-  mask = (1 << cache->n_tag_bit) - 1;
-  mask <<= (cache->n_index_bit + cache->n_offset_bit);
-  return (addr & mask) >> (cache->n_index_bit + cache->n_offset_bit);
+  // int mask;
+  // mask = (1 << cache->n_tag_bit) - 1;
+  // mask <<= (cache->n_index_bit + cache->n_offset_bit);
+  return (addr) >> (cache->n_index_bit + cache->n_offset_bit);
 }
 
 /* Given a configured cache, returns the index portion of the given address.
@@ -80,8 +80,8 @@ unsigned long get_cache_index(cache_t *cache, unsigned long addr) {
   // FIX THIS CODE!
   int mask;
   mask = (1 << cache->n_index_bit) - 1;
-  mask <<= (cache->n_offset_bit);
-  return (addr & mask) >> cache->n_offset_bit;
+  long new_addr = addr >> cache->n_offset_bit;
+  return (new_addr & mask);
 }
 
 /* Given a configured cache, returns the given address with the offset bits zeroed out.
@@ -113,21 +113,24 @@ bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   unsigned long block_addr = get_cache_block_addr(cache, addr);
   unsigned long tag = get_cache_tag(cache, addr);
   unsigned long index = get_cache_index(cache, addr);
+  
 
+  for (int i = 0; i < cache->assoc; i++) {
+    cache_line_t *line = &(cache->lines[index][i]);
 
-  cache_line_t *line = &(cache->lines[index][0]);
+    if (line->tag == tag && line->state == VALID) {
+      // Cache hit
+      update_stats(cache->stats, true, false, false, action);
+      return true;
+    }
 
-  if (line->tag == tag && line->state != INVALID) {
-    // Cache hit
-    update_stats(cache->stats, true, false, false, action);
-    return true;
-  } else {
-    // Cache miss
-    bool upgrade_miss = (action == STORE);
-    update_stats(cache->stats, false, true, upgrade_miss, action);
-    line->tag = tag;
-    line->state = VALID; // Assuming all misses result in a shared state
-    return false;
   }
+  // Cache miss
+  cache_line_t *line = &(cache->lines[index][0]);
+  bool upgrade_miss = (action == STORE);
+  update_stats(cache->stats, false, true, upgrade_miss, action);
+  line->tag = tag;
+  line->state = VALID;
+  return false;
 
 }
