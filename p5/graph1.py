@@ -3,7 +3,7 @@
 import sys
 import os
 import time
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
 # associtivity range
 assoc_range = [1, 2, 4]
