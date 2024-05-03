@@ -98,6 +98,17 @@ unsigned long get_cache_block_addr(cache_t *cache, unsigned long addr) {
   return addr & mask;
 }
 
+int add_with_wraparound(int *x, int n) {
+    // Increment the integer variable
+    (*x)++;
+    
+    // Wrap around if it exceeds n
+    if (*x >= n) {
+        *x = 0;
+    }
+    
+    return *x;
+}
 
 /* this method takes a cache, an address, and an action
  * it proceses the cache access. functionality in no particular order: 
@@ -109,28 +120,26 @@ unsigned long get_cache_block_addr(cache_t *cache, unsigned long addr) {
  */
 bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   // FIX THIS CODE!
-  //task 4
+  //task 5
   unsigned long block_addr = get_cache_block_addr(cache, addr);
   unsigned long tag = get_cache_tag(cache, addr);
   unsigned long index = get_cache_index(cache, addr);
-  
 
   for (int i = 0; i < cache->assoc; i++) {
     cache_line_t *line = &(cache->lines[index][i]);
-
     if (line->tag == tag && line->state == VALID) {
       // Cache hit
       update_stats(cache->stats, true, false, false, action);
+      int way = i;
+      cache->lru_way[index] = add_with_wraparound(&(way), cache->assoc);
       return true;
     }
-
   }
   // Cache miss
-  cache_line_t *line = &(cache->lines[index][0]);
-  bool upgrade_miss = (action == STORE);
-  update_stats(cache->stats, false, true, upgrade_miss, action);
+  cache_line_t *line = &(cache->lines[index][cache->lru_way[index]]);
+  update_stats(cache->stats, false, true, false, action); //fix upgrade stats
   line->tag = tag;
   line->state = VALID;
+  cache->lru_way[index] = add_with_wraparound(&(cache->lru_way[index]), cache->assoc);
   return false;
-
 }

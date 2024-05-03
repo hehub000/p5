@@ -4,6 +4,7 @@ import sys
 import os
 import time
 from matplotlib import pyplot as plt
+import numpy as np
 
 # associtivity range
 assoc_range = [1, 2, 4]
@@ -60,6 +61,13 @@ def graph():
     plt.xlabel('Capacity')
     plt.ylabel('Miss Rate')
     plt.savefig(figname)
+
+    # # Set the ticks and labels for the y-axis
+    # num_ticks = 10
+    # y_ticks = np.linspace(0, 1, num_ticks)
+    # plt.yticks(y_ticks)
+
+    # plt.savefig(figname)
     plt.show()
 
 graph()
