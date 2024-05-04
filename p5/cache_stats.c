@@ -65,8 +65,8 @@ void calculate_stat_rates(cache_stats_t *stats, int block_size) {
   long misses = stats->n_cpu_accesses - stats->n_hits;
   stats->B_bus_to_cache = misses * block_size;
   stats->B_cache_to_bus_wb = stats->n_writebacks * block_size;
-  stats->B_cache_to_bus_wt = 0;
+  stats->B_cache_to_bus_wt = stats->n_stores * 4;
   stats->B_total_traffic_wb = stats->B_bus_to_cache + stats->B_cache_to_bus_wb;
-  stats->B_total_traffic_wt = 0;
+  stats->B_total_traffic_wt = stats->B_bus_to_cache + stats->B_cache_to_bus_wt;
 
 }

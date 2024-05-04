@@ -120,7 +120,7 @@ int add_with_wraparound(int *x, int n) {
  */
 bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   // FIX THIS CODE!
-  //task 6
+  //task 7
   // unsigned long block_addr = get_cache_block_addr(cache, addr);
   unsigned long tag = get_cache_tag(cache, addr);
   unsigned long index = get_cache_index(cache, addr);

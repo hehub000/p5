@@ -1,0 +1,68 @@
+P5 Printout for CS 3410
+----------------------------------
+Trace  		trace.1t.long.txt
+Instruction Limit 	none
+ *** Cache Configuration *** 
+capacity   		65536 B
+block_size 		    2 B
+associativity 		4-way
+n_set 			8192
+n_cache_line 	32768
+tag: 18, index: 13, offset: 1
+Coherence Protocol: 	none
+lru_on_invalidate_f: 	false
+Processing trace...
+1 0
+Processed 100457 lines.
+    *** Results for Core 0 ***
+0.n_cpu_accesses 	100457
+0.n_loads 		78301
+0.n_stores 		22156
+0.n_hits 		86230
+0.n_misses 		14227
+0.hit_rate 		85.84
+0.miss_rate 		14.16
+0.n_upgrade_miss 	0
+0.n_bus_snoops 	0
+0.n_snoop_hits 	0
+0.n_writebacks 	3006
+Memory Traffic:
+0.B_written_bus_to_cache 	28454
+0.B_written_cache_to_bus_wb 	6012
+0.B_written_cache_to_bus_wt 	88624
+0.B_total_traffic_wb 	34466
+0.B_total_traffic_wt 	117078
+P5 Printout for CS 3410
+----------------------------------
+Trace  		trace.1t.long.txt
+Instruction Limit 	none
+ *** Cache Configuration *** 
+capacity   		65536 B
+block_size 		    2 B
+associativity 		4-way
+n_set 			8192
+n_cache_line 	32768
+tag: 18, index: 13, offset: 1
+Coherence Protocol: 	none
+lru_on_invalidate_f: 	false
+Processing trace...
+1 0
+Processed 100457 lines.
+    *** Results for Core 0 ***
+0.n_cpu_accesses 	100457
+0.n_loads 		78301
+0.n_stores 		22156
+0.n_hits 		86230
+0.n_misses 		14227
+0.hit_rate 		85.84
+0.miss_rate 		14.16
+0.n_upgrade_miss 	0
+0.n_bus_snoops 	0
+0.n_snoop_hits 	0
+0.n_writebacks 	3006
+Memory Traffic:
+0.B_written_bus_to_cache 	28454
+0.B_written_cache_to_bus_wb 	6012
+0.B_written_cache_to_bus_wt 	88624
+0.B_total_traffic_wb 	34466
+0.B_total_traffic_wt 	117078
