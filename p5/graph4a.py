@@ -9,7 +9,7 @@ import numpy as np
 # associtivity range
 assoc_range = [4]
 # block size range
-bsize_range = [b for b in range(1,14)]
+bsize_range = [b for b in range(2,15)]
 # capacity range
 cap_range = [16]
 # number of cores (1, 2, 4)
@@ -18,7 +18,7 @@ cores = [1]
 protocol='none'
 
 expname='exp1'
-figname='graph3.png'
+figname='graph4a.png'
 
 
 def get_stats(logfile, key):
@@ -40,7 +40,7 @@ def graph():
     folder = "results/"+expname+"/"+timestr+"/"
     os.system("mkdir -p "+folder)
 
-    wb_byte_traffic = {a:[] for a in assoc_range}
+    miss_rate = {a:[] for a in assoc_range}
 
     for a in assoc_range:
         for b in bsize_range:
@@ -49,32 +49,17 @@ def graph():
                     logfile = folder+"%s-%02d-%02d-%02d-%02d.out" % (
                             protocol, d, c, b, a)
                     run_exp(logfile, d, c, b, a)
-                    wb_byte_traffic[a].append(get_stats(logfile, 'B_total_traffic_wb'))
-
-    wt_byte_traffic = {a:[] for a in assoc_range}
-
-    for a in assoc_range:
-        for b in bsize_range:
-            for c in cap_range:
-                for d in cores:
-                    logfile = folder+"%s-%02d-%02d-%02d-%02d.out" % (
-                            protocol, d, c, b, a)
-                    run_exp(logfile, d, c, b, a)
-                    wt_byte_traffic[a].append(get_stats(logfile, 'B_total_traffic_wt'))
+                    miss_rate[a].append(get_stats(logfile, 'miss_rate'))
 
     plots = []
-    for a in wb_byte_traffic:
-        p,=plt.plot([2**i for i in bsize_range], wb_byte_traffic[a])
+    for a in miss_rate:
+        p,=plt.plot([2**i for i in bsize_range], miss_rate[a])
         plots.append(p)
-    for a in wt_byte_traffic:
-        p,=plt.plot([2**i for i in bsize_range], wt_byte_traffic[a])
-        plots.append(p)
-    plt.legend(plots, ['Write Back', 'Write Through'])
+    plt.legend(plots, ['64KB 4 Way Set Associative Cache'])
     plt.xscale('log', base=2)
-    plt.yscale('log', base=2)
-    plt.title('Graph #3: Write Through and Write back Byte Traffic vs Block Size')
+    plt.title('Graph #4a: Miss Rate vs Block Size')
     plt.xlabel('Block Size')
-    plt.ylabel('Byte Traffic')
+    plt.ylabel('Miss Rate')
     plt.savefig(figname)
 
     # # Set the ticks and labels for the y-axis
