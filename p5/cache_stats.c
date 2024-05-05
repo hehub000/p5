@@ -39,17 +39,40 @@ cache_stats_t *make_cache_stats() {
  * also need to update total_snoop_hits, total_bus_snoops
 */
 void update_stats(cache_stats_t *stats, bool hit_f, bool writeback_f, bool upgrade_miss_f, enum action_t action) {
-  if (hit_f)
+  if (hit_f) {
     stats->n_hits++;
+  }
+    
   
-  if (action == STORE)
+  if (action == STORE) {
     stats->n_stores++;
+  }
+    
 
-  if (writeback_f)
-    stats->n_writebacks++;
+  if (action == LD_MISS) {
+    stats->n_bus_snoops++;
+    if (hit_f) {
+      stats->n_snoop_hits++;
+    }
+  }
+    
   
-  if (upgrade_miss_f)
+  if (action == ST_MISS) {
+    stats->n_bus_snoops++;
+    if (hit_f) {
+      stats->n_snoop_hits++;
+    }
+  }
+    
+
+  if (writeback_f) {
+    stats->n_writebacks++;
+  }
+    
+  
+  if (upgrade_miss_f) {
     stats->n_upgrade_miss++;
+  }
 
   stats->n_cpu_accesses++;
 }
