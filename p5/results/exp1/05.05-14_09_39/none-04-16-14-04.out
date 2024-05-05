@@ -1,0 +1,88 @@
+P5 Printout for CS 3410
+----------------------------------
+Trace  		trace.4t.long.txt
+Instruction Limit 	none
+ *** Cache Configuration *** 
+capacity   		65536 B
+block_size 		16384 B
+associativity 		fully
+n_set 			1
+n_cache_line 	4
+tag: 18, index: 0, offset: 14
+Coherence Protocol: 	none
+lru_on_invalidate_f: 	false
+Processing trace...
+4 0
+Processed 400000 lines.
+    *** Results for Core 0 ***
+0.n_cpu_accesses 	216297
+0.n_loads 		194141
+0.n_stores 		22156
+0.n_hits 		62163
+0.n_misses 		154134
+0.hit_rate 		28.74
+0.miss_rate 		71.26
+0.n_upgrade_miss 	0
+0.n_bus_snoops 	115840
+0.n_snoop_hits 	3821
+0.n_writebacks 	39490
+Memory Traffic:
+0.B_written_bus_to_cache 	2525331456
+0.B_written_cache_to_bus_wb 	647004160
+0.B_written_cache_to_bus_wt 	88624
+0.B_total_traffic_wb 	3172335616
+0.B_total_traffic_wt 	2525420080
+    *** Results for Core 1 ***
+1.n_cpu_accesses 	220627
+1.n_loads 		198672
+1.n_stores 		21955
+1.n_hits 		66768
+1.n_misses 		153859
+1.hit_rate 		30.26
+1.miss_rate 		69.74
+1.n_upgrade_miss 	0
+1.n_bus_snoops 	120655
+1.n_snoop_hits 	4096
+1.n_writebacks 	45677
+Memory Traffic:
+1.B_written_bus_to_cache 	2520825856
+1.B_written_cache_to_bus_wb 	748371968
+1.B_written_cache_to_bus_wt 	87820
+1.B_total_traffic_wb 	3269197824
+1.B_total_traffic_wt 	2520913676
+    *** Results for Core 2 ***
+2.n_cpu_accesses 	215964
+2.n_loads 		194028
+2.n_stores 		21936
+2.n_hits 		61820
+2.n_misses 		154144
+2.hit_rate 		28.63
+2.miss_rate 		71.37
+2.n_upgrade_miss 	0
+2.n_bus_snoops 	116225
+2.n_snoop_hits 	3811
+2.n_writebacks 	39477
+Memory Traffic:
+2.B_written_bus_to_cache 	2525495296
+2.B_written_cache_to_bus_wb 	646791168
+2.B_written_cache_to_bus_wt 	87744
+2.B_total_traffic_wb 	3172286464
+2.B_total_traffic_wt 	2525583040
+    *** Results for Core 3 ***
+3.n_cpu_accesses 	220977
+3.n_loads 		197463
+3.n_stores 		23514
+3.n_hits 		67189
+3.n_misses 		153788
+3.hit_rate 		30.41
+3.miss_rate 		69.59
+3.n_upgrade_miss 	0
+3.n_bus_snoops 	121145
+3.n_snoop_hits 	4167
+3.n_writebacks 	47959
+Memory Traffic:
+3.B_written_bus_to_cache 	2519662592
+3.B_written_cache_to_bus_wb 	785760256
+3.B_written_cache_to_bus_wt 	94056
+3.B_total_traffic_wb 	3305422848
+3.B_total_traffic_wt 	2519756648

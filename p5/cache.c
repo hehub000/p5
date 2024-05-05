@@ -120,7 +120,7 @@ int add_with_wraparound(int *x, int n) {
  */
 bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   // FIX THIS CODE!
-  //task 7
+  //task 9
   // unsigned long block_addr = get_cache_block_addr(cache, addr);
   unsigned long tag = get_cache_tag(cache, addr);
   unsigned long index = get_cache_index(cache, addr);
@@ -128,15 +128,23 @@ bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   for (int i = 0; i < cache->assoc; i++) {
     cache_line_t *line = &(cache->lines[index][i]);
     if (line->tag == tag && line->state == VALID) {
-      // Cache hit
+      // Cache hit valid
       if(action == STORE){
         line->dirty_f = true;
       }
-      update_stats(cache->stats, true, false, false, action);
       int way = i;
       cache->lru_way[index] = add_with_wraparound(&(way), cache->assoc);
+      if (action == LD_MISS || action == ST_MISS) {
+        // Remote initiated event
+        line->state = INVALID;
+        bool writeback_f = false;
+        if (line->dirty_f) {
+          writeback_f = true;
+        }
+      }
+      update_stats(cache->stats, true, writeback_f, false, action);
       return true;
-    }
+    } 
   }
   // Cache miss
   cache_line_t *line = &(cache->lines[index][cache->lru_way[index]]);
@@ -152,7 +160,9 @@ bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   }
   update_stats(cache->stats, false, writeback_f, false, action); 
   line->tag = tag;
-  line->state = VALID;
+  if (action == LOAD || action == STORE) {
+    line->state = VALID;
+  }
   cache->lru_way[index] = add_with_wraparound(&(cache->lru_way[index]), cache->assoc);
   return false;
 }
