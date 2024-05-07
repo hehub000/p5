@@ -145,6 +145,8 @@ bool msi_protocol(cache_t *cache, unsigned long addr, enum action_t action) {
       else if (action == STORE) {
         line->state = MODIFIED;
         line->dirty_f = true;
+        update_stats(cache->stats, false, writeback_f, true, action);
+        return false;
       }
       update_stats(cache->stats, true, writeback_f, false, action);
       return true;
@@ -189,6 +191,7 @@ bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   if (cache->protocol == NONE || cache->protocol == VI) {
     for (int i = 0; i < cache->assoc; i++) {
       cache_line_t *line = &(cache->lines[index][i]);
+
       if (line->tag == tag && line->state == VALID) {
         // Cache hit valid
         if(action == STORE){
@@ -196,10 +199,10 @@ bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
         }
         int way = i;
         cache->lru_way[index] = add_with_wraparound(&(way), cache->assoc);
+        bool writeback_f = false;
         if (action == LD_MISS || action == ST_MISS) {
           // Remote initiated event
           line->state = INVALID;
-          bool writeback_f = false;
           if (line->dirty_f) {
             writeback_f = true;
           }
@@ -208,12 +211,11 @@ bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
         return true;
       } 
     }
+
+    
     // Cache miss
     cache_line_t *line = &(cache->lines[index][cache->lru_way[index]]);
-    bool writeback_f = false;
-    if (line->dirty_f && line->state == VALID) {
-      writeback_f = true;
-    }
+    bool writeback_f = line->dirty_f && line->state == VALID;
     if (action == STORE) {
       line->dirty_f = true;
     }
@@ -221,16 +223,18 @@ bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
       line->dirty_f = false;
     }
     update_stats(cache->stats, false, writeback_f, false, action); 
+
     line->tag = tag;
+    
     if (action == LOAD || action == STORE) {
       line->state = VALID;
     }
+    
     cache->lru_way[index] = add_with_wraparound(&(cache->lru_way[index]), cache->assoc);
     return false;
-  
   }
   else {
-    return msi_protocol(*cache, addr, action)
+    return msi_protocol(cache, addr, action);
   }
 }
 //
