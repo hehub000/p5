@@ -188,50 +188,55 @@ bool access_cache(cache_t *cache, unsigned long addr, enum action_t action) {
   unsigned long tag = get_cache_tag(cache, addr);
   unsigned long index = get_cache_index(cache, addr);
 
+
   if (cache->protocol == NONE || cache->protocol == VI) {
+    bool hit_f = false;
+    bool writeback_f = false;
+
     for (int i = 0; i < cache->assoc; i++) {
       cache_line_t *line = &(cache->lines[index][i]);
-
       if (line->tag == tag && line->state == VALID) {
         // Cache hit valid
         if(action == STORE){
           line->dirty_f = true;
         }
-        int way = i;
-        cache->lru_way[index] = add_with_wraparound(&(way), cache->assoc);
-        bool writeback_f = false;
+        if (action == LOAD || action == STORE) { 
+          int way = i;
+          cache->lru_way[index] = add_with_wraparound(&(way), cache->assoc);
+        }
         if (action == LD_MISS || action == ST_MISS) {
           // Remote initiated event
           line->state = INVALID;
-          if (line->dirty_f) {
-            writeback_f = true;
-          }
+          writeback_f = line->dirty_f;
+          line->dirty_f = false;
         }
-        update_stats(cache->stats, true, writeback_f, false, action);
-        return true;
+        hit_f = true;
+        break;
       } 
     }
-
-    
     // Cache miss
-    cache_line_t *line = &(cache->lines[index][cache->lru_way[index]]);
-    bool writeback_f = line->dirty_f && line->state == VALID;
-    if (action == STORE) {
-      line->dirty_f = true;
-    }
-    if (action == LOAD) {
-      line->dirty_f = false;
-    }
-    update_stats(cache->stats, false, writeback_f, false, action); 
+    if(!hit_f){
+      if (action == LOAD || action == STORE) {
+        cache_line_t *line = &(cache->lines[index][cache->lru_way[index]]);
+        // enable writeback if the line is valid and the dirty bit was on
+        writeback_f = line->dirty_f && line->state == VALID;
+        if (action == STORE) {
+          line->dirty_f = true;
+        }
+        if (action == LOAD) {
+          line->dirty_f = false;
+        }
 
-    line->tag = tag;
+        line->tag = tag;
+        
+        line->state = VALID;
+        
+        cache->lru_way[index] = add_with_wraparound(&(cache->lru_way[index]), cache->assoc);
+      }
+    }    
     
-    if (action == LOAD || action == STORE) {
-      line->state = VALID;
-    }
-    
-    cache->lru_way[index] = add_with_wraparound(&(cache->lru_way[index]), cache->assoc);
-    return false;
+    update_stats(cache->stats, hit_f, writeback_f, false, action);
+    return hit_f;
   }
   else {
     return msi_protocol(cache, addr, action);

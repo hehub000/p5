@@ -77,7 +77,6 @@ void process_trace(simulator_t *sim) {
         if (!hit_f) { 
             for (i = 0; i < sim->n_core; i++){ // 1 core? does nothing
                 if (i != core) {
-                    printf("Core %d snooping on Core %d\n", i, core);
                     access_cache(sim->cache[i], address,
                             (action == LOAD) ? LD_MISS : ST_MISS);
                 }  

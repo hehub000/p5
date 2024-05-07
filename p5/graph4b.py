@@ -60,6 +60,7 @@ def graph():
     plt.title('Graph #4b: Miss Rate vs Block Size')
     plt.xlabel('Block Size')
     plt.ylabel('Miss Rate')
+    plt.ylim(0, 25)
     plt.savefig(figname)
 
     # # Set the ticks and labels for the y-axis
