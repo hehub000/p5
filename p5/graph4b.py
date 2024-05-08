@@ -15,7 +15,7 @@ cap_range = [16]
 # number of cores (1, 2, 4)
 cores = [1, 2, 4]
 # coherence protocol: (none, vi, or msi)
-protocol='none'
+protocol='vi'
 
 expname='exp1'
 figname='graph4b.png'
@@ -60,7 +60,7 @@ def graph():
     plt.title('Graph #4b: Miss Rate vs Block Size')
     plt.xlabel('Block Size')
     plt.ylabel('Miss Rate')
-    plt.ylim(0, 25)
+    plt.ylim(0, 40)
     plt.savefig(figname)
 
     # # Set the ticks and labels for the y-axis

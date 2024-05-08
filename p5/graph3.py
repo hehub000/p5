@@ -49,7 +49,7 @@ def graph():
                     logfile = folder+"%s-%02d-%02d-%02d-%02d.out" % (
                             protocol, d, c, b, a)
                     run_exp(logfile, d, c, b, a)
-                    wb_byte_traffic[a].append(get_stats(logfile, 'B_total_traffic_wb'))
+                    wb_byte_traffic[a].append(get_stats(logfile, 'B_written_cache_to_bus_wb'))
 
     wt_byte_traffic = {a:[] for a in assoc_range}
 
@@ -60,7 +60,7 @@ def graph():
                     logfile = folder+"%s-%02d-%02d-%02d-%02d.out" % (
                             protocol, d, c, b, a)
                     run_exp(logfile, d, c, b, a)
-                    wt_byte_traffic[a].append(get_stats(logfile, 'B_total_traffic_wt'))
+                    wt_byte_traffic[a].append(get_stats(logfile, 'B_written_cache_to_bus_wt'))
 
     plots = []
     for a in wb_byte_traffic:
@@ -72,9 +72,9 @@ def graph():
     plt.legend(plots, ['Write Back', 'Write Through'])
     plt.xscale('log', base=2)
     plt.yscale('log', base=2)
-    plt.title('Graph #3: Write Through and Write back Byte Traffic vs Block Size')
+    plt.title('Graph #3: Write Through and Write back CtB Byte Traffic vs Block Size')
     plt.xlabel('Block Size')
-    plt.ylabel('Byte Traffic')
+    plt.ylabel('Cache to Bus Byte Traffic')
     plt.savefig(figname)
 
     # # Set the ticks and labels for the y-axis

@@ -49,7 +49,7 @@ def graph():
                     logfile = folder+"%s-%02d-%02d-%02d-%02d.out" % (
                             protocol, d, c, b, a)
                     run_exp(logfile, d, c, b, a)
-                    byte_traffic[a].append(get_stats(logfile, 'B_total_traffic_wb'))
+                    byte_traffic[a].append(get_stats(logfile, 'B_written_cache_to_bus_wb'))
 
     plots = []
     for a in byte_traffic:
@@ -58,9 +58,9 @@ def graph():
     plt.legend(plots, ['assoc %d' % a for a in assoc_range])
     plt.xscale('log', base=2)
     plt.yscale('log', base=2)
-    plt.title('Graph #2: Byte Traffic vs Cache Size')
+    plt.title('Graph #2: CtB Byte Traffic vs Cache Size')
     plt.xlabel('Capacity')
-    plt.ylabel('Byte Traffic')
+    plt.ylabel('Cache to Bus Byte Traffic')
     plt.savefig(figname)
 
     # # Set the ticks and labels for the y-axis
